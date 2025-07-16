@@ -1,6 +1,6 @@
 # HN Sentiment Analyzer
 
-Real-time sentiment analysis of Hacker News top stories using transformers.
+Real-time sentiment analysis of Hacker News top stories using transformers. Tried my best to reduce neutral sentiment and have the analyzer pick a side.
 
 ## Quick Start
 
@@ -22,4 +22,4 @@ streamlit run app.py
 2. Connect to streamlit.dev
 3. Deploy in 1 click
 
-Built in 30 minutes for instant momentum. 
+Built in 30 minutes
