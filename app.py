@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
 from hn_analyzer import HNSentimentAnalyzer
 import time
 
@@ -86,6 +88,80 @@ with tab1:
             color_discrete_map={'Positive': '#2E8B57', 'Neutral': '#4682B4', 'Negative': '#CD5C5C'}
         )
         st.plotly_chart(fig_bar, use_container_width=True)
+
+    st.subheader("📈 Matplotlib Visualizations")
+    
+    # Set matplotlib style
+    plt.style.use('default')
+    sns.set_palette("husl")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("**Confidence Score Distribution**")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        
+        # Create histogram of sentiment scores
+        colors = {'Positive': '#2E8B57', 'Neutral': '#4682B4', 'Negative': '#CD5C5C'}
+        for sentiment in df['sentiment'].unique():
+            if sentiment and not pd.isna(sentiment):
+                sentiment_data = df[df['sentiment'] == sentiment]['sentiment_score']
+                ax.hist(sentiment_data, alpha=0.7, label=sentiment, 
+                       color=colors.get(sentiment, '#999999'), bins=15)
+        
+        ax.set_xlabel('Confidence Score')
+        ax.set_ylabel('Number of Stories')
+        ax.set_title('Sentiment Confidence Distribution')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        st.pyplot(fig)
+        plt.close()
+    
+    with col2:
+        st.markdown("**Score vs Sentiment Box Plot**")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        
+        # Prepare data for box plot
+        plot_data = []
+        sentiments = []
+        scores = []
+        
+        for sentiment in ['Positive', 'Neutral', 'Negative']:
+            sentiment_scores = df[df['sentiment'] == sentiment]['sentiment_score']
+            if not sentiment_scores.empty:
+                plot_data.extend(sentiment_scores.tolist())
+                sentiments.extend([sentiment] * len(sentiment_scores))
+        
+        if plot_data:
+            box_df = pd.DataFrame({'Sentiment': sentiments, 'Confidence': plot_data})
+            sns.boxplot(data=box_df, x='Sentiment', y='Confidence', ax=ax,
+                       palette={'Positive': '#2E8B57', 'Neutral': '#4682B4', 'Negative': '#CD5C5C'})
+        
+        ax.set_title('Confidence Score Distribution by Sentiment')
+        ax.set_ylabel('Confidence Score')
+        ax.grid(True, alpha=0.3)
+        st.pyplot(fig)
+        plt.close()
+    
+    with col3:
+        st.markdown("**HN Score vs Sentiment Confidence**")
+        fig, ax = plt.subplots(figsize=(8, 6))
+        
+        # Scatter plot of HN score vs sentiment confidence
+        for sentiment in df['sentiment'].unique():
+            if sentiment and not pd.isna(sentiment):
+                sentiment_df = df[df['sentiment'] == sentiment]
+                ax.scatter(sentiment_df['score'], sentiment_df['sentiment_score'], 
+                          label=sentiment, alpha=0.7, s=50,
+                          color=colors.get(sentiment, '#999999'))
+        
+        ax.set_xlabel('HN Score (Upvotes)')
+        ax.set_ylabel('Sentiment Confidence')
+        ax.set_title('HN Score vs Sentiment Confidence')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        st.pyplot(fig)
+        plt.close()
 
     st.subheader("🔥 Top Stories by Sentiment")
 

@@ -3,4 +3,6 @@ requests
 transformers
 torch
 pandas
-plotly 
+plotly
+matplotlib
+seaborn 
